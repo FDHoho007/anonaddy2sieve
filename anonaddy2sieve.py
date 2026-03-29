@@ -15,11 +15,15 @@ def get_aliases(url, api_key):
             f"{url}/api/v1/aliases?page[number]={page}&page[size]=100",
             headers={"Authorization": f"Bearer {api_key}"}
         )
-        data = response.json()
-        
+        try:
+            data = response.json()
+        except Exception:
+            print("Non-JSON response received from server:")
+            print(response.text)
+            return {}
+
         for alias in data.get("data", []):
             aliases[alias["local_part"]] = alias.get("description", "")
-        
         if data.get("meta", {}).get("last_page") == page:
             break
         page += 1
